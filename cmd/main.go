@@ -1,6 +1,9 @@
 package main
 
 import (
+	"fmt"
+
+	"github.com/normatov13/go-iterm/src/codes/color"
 	"github.com/normatov13/go-iterm/src/command"
 )
 
@@ -12,5 +15,8 @@ func main() {
 	menu.Add("Js")
 	menu.Add("Ts")
 
-	menu.DrawMenu()
+	// command.Print("Hello", color.Black)
+	// menu.DrawMenu()
+	command.NewText("Hello World").Color(color.RED).Println()
+	fmt.Println("sdgfsd")
 }
