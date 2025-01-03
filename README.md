@@ -27,7 +27,7 @@ See for more infromation: https://pkg.go.dev/github.com/normatov07/iterm
 ## Installation
 
 ```bash
-go get github.com/normatov13/iterm
+go get github.com/normatov07/iterm
 ```
 
 
