@@ -3,8 +3,8 @@ package main
 import (
 	"fmt"
 
-	"github.com/normatov13/iterm"
-	"github.com/normatov13/iterm/color"
+	"github.com/normatov07/iterm"
+	"github.com/normatov07/iterm/color"
 )
 
 func main() {

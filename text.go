@@ -3,7 +3,7 @@ package iterm
 import (
 	"fmt"
 
-	"github.com/normatov13/iterm/color"
+	"github.com/normatov07/iterm/color"
 )
 
 type Text struct {

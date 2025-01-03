@@ -7,8 +7,8 @@ import (
 	"os"
 	"strings"
 
-	"github.com/normatov13/iterm/cursor"
-	"github.com/normatov13/iterm/keypass"
+	"github.com/normatov07/iterm/cursor"
+	"github.com/normatov07/iterm/keypass"
 )
 
 type MenuData interface {
