@@ -1,4 +1,4 @@
-package command
+package iterm
 
 import (
 	"errors"
@@ -7,8 +7,8 @@ import (
 	"os"
 	"strings"
 
-	"github.com/normatov13/iterm/src/codes/cursor"
-	"github.com/normatov13/iterm/src/codes/keypass"
+	"github.com/normatov13/iterm/cursor"
+	"github.com/normatov13/iterm/keypass"
 )
 
 type MenuData interface {

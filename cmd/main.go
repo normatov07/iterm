@@ -3,13 +3,13 @@ package main
 import (
 	"fmt"
 
-	"github.com/normatov13/iterm/src/codes/color"
-	"github.com/normatov13/iterm/src/command"
+	"github.com/normatov13/iterm"
+	"github.com/normatov13/iterm/color"
 )
 
 func main() {
 
-	menu := command.Menu{}
+	menu := iterm.Menu{}
 	menu.Add("Vue")
 	menu.Add("React")
 	menu.Add("Js")
@@ -17,6 +17,6 @@ func main() {
 
 	// command.Print("Hello", color.Black)
 	// menu.DrawMenu()
-	command.NewText("Hello World").Color(color.RED).Println()
+	iterm.NewText("Hello World").Color(color.RED).Println()
 	fmt.Println("sdgfsd")
 }

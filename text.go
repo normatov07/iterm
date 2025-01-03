@@ -1,9 +1,9 @@
-package command
+package iterm
 
 import (
 	"fmt"
 
-	"github.com/normatov13/iterm/src/codes/color"
+	"github.com/normatov13/iterm/color"
 )
 
 type Text struct {
