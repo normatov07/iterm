@@ -4,6 +4,8 @@
 
 `iTerm` is a powerful Golang package designed to enhance terminal text styling and menu creation. It provides an intuitive, fluent interface for creating colorful and styled terminal outputs with ease.
 
+See for more infromation: https://pkg.go.dev/github.com/normatov07/iterm
+
 ## Features
 
 - 🎨 **Text Styling**
