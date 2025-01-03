@@ -7,8 +7,8 @@ import (
 	"os"
 	"strings"
 
-	"github.com/normatov13/go-iterm/src/codes/cursor"
-	"github.com/normatov13/go-iterm/src/codes/keypass"
+	"github.com/normatov13/iterm/src/codes/cursor"
+	"github.com/normatov13/iterm/src/codes/keypass"
 )
 
 type MenuData interface {

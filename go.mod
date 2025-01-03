@@ -1,4 +1,4 @@
-module github.com/normatov13/go-iterm
+module github.com/normatov13/iterm
 
 go 1.23.4
 

@@ -3,8 +3,8 @@ package main
 import (
 	"fmt"
 
-	"github.com/normatov13/go-iterm/src/codes/color"
-	"github.com/normatov13/go-iterm/src/command"
+	"github.com/normatov13/iterm/src/codes/color"
+	"github.com/normatov13/iterm/src/command"
 )
 
 func main() {

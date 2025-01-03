@@ -3,7 +3,7 @@ package command
 import (
 	"fmt"
 
-	"github.com/normatov13/go-iterm/src/codes/color"
+	"github.com/normatov13/iterm/src/codes/color"
 )
 
 type Text struct {
