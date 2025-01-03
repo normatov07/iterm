@@ -17,6 +17,11 @@
   - Dynamic menu creation
   - Easy menu item addition
 
+- 📋 **Change terminal mode**
+  - Raw mode
+  - Normal mode
+
+
 ## Installation
 
 ```bash
@@ -59,6 +64,13 @@ iterm.NewText("Styled Text")
     .Italic(true)
     .UnderLine(true)
     .Println()
+```
+
+Change terminal mode
+
+```go
+iterm.SetRawMode()
+iterm.RestoreTermMode()
 ```
 
 ### License
