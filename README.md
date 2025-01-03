@@ -17,7 +17,7 @@
   - Dynamic menu creation
   - Easy menu item addition
 
-- 📋 **Change terminal mode**
+- 🖥️ **Change terminal mode**
   - Raw mode
   - Normal mode
 
