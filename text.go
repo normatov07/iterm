@@ -31,20 +31,20 @@ func (t *Text) BackgroudColor(color color.Color) *Text {
 	return t
 }
 
-func (t *Text) Bold(bold bool) *Text {
-	t.bold = bold
+func (t *Text) Bold() *Text {
+	t.bold = true
 
 	return t
 }
 
-func (t *Text) Italic(italic bool) *Text {
-	t.italic = italic
+func (t *Text) Italic() *Text {
+	t.italic = true
 
 	return t
 }
 
-func (t *Text) UnderLine(uline bool) *Text {
-	t.uline = uline
+func (t *Text) UnderLine() *Text {
+	t.uline = true
 
 	return t
 }
@@ -84,4 +84,12 @@ func (t *Text) parseStyle() string {
 	text = fmt.Sprintf("%s\033[0m", text)
 
 	return text
+}
+
+func Colorful(text string, color color.Color) string {
+	return fmt.Sprintf("\033[%dm%s\033[0m", color, text)
+}
+
+func RGBColor(text string, r, g, b int) string {
+	return fmt.Sprintf("\033[38;2;%d;%d;%dm%s\033[0m", r, g, b, text)
 }
