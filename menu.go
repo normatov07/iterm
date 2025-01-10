@@ -6,9 +6,11 @@ import (
 	"io"
 	"os"
 	"strings"
+	"unicode/utf8"
 
 	"github.com/normatov07/iterm/cursor"
 	"github.com/normatov07/iterm/keypass"
+	"github.com/normatov07/iterm/screen"
 )
 
 type MenuData interface {
@@ -16,7 +18,7 @@ type MenuData interface {
 	Del(index int)
 }
 
-type Menu struct {
+type menu struct {
 	items       []string
 	border      bool
 	title       string
@@ -24,48 +26,62 @@ type Menu struct {
 	tmRowLength int
 }
 
-func NewMenu(title string) *Menu {
-	return &Menu{
-		title:       title,
-		tmRowLength: 50,
-	}
+func NewMenu() *menu {
+	menu := menu{}
+	menu.terminalScreenSize()
+
+	return &menu
 }
 
-func (m *Menu) SetTitle(title string) {
-	m.title = title
+func (m *menu) SetTitle(title string) {
+	m.title = m.responsiveText(title)
 }
 
-func (m *Menu) SetBorder() {
+func (m *menu) SetBorder() {
 	m.border = true
 }
 
-func (m *Menu) SetList(list []string) {
+func (m *menu) SetList(list []string) {
 	m.items = list
 }
 
-func (m *Menu) Add(title string) {
-	m.items = append(m.items, title)
+func (m *menu) Add(title string) {
+	m.items = append(m.items, m.responsiveText(title))
 }
 
-func (m *Menu) Del(index int) {
+func (m *menu) Del(index int) {
 	m.items = append(m.items[:index], m.items[index:]...)
 }
 
-func (m *Menu) Length() int {
+func (m *menu) Get(index int) string {
+	if index >= m.Length() {
+		panic("index out of range")
+	}
+
+	return m.items[index]
+}
+func (m *menu) GetActiveMenu() string {
+	return m.items[m.activeIndex]
+}
+
+func (m *menu) Length() int {
 	return len(m.items)
 }
 
-func (m *Menu) lineCount() int {
+func (m *menu) lineCount() int {
 	line := m.Length()
 
 	if m.title != "" {
-		line += 2
+		if m.border {
+			line += 1
+		}
+		line += 1
 	}
 
 	return line
 }
 
-func (m *Menu) Render() {
+func (m *menu) Render() {
 	if m.border {
 		m.borderedRender()
 	} else {
@@ -73,23 +89,25 @@ func (m *Menu) Render() {
 	}
 }
 
-func (m *Menu) simpleRender() {
+func (m *menu) simpleRender() {
 	m.MoveCursorStart()
 
 	if m.title != "" {
-		fmt.Printf("    %s\n%s", m.title, cursor.BEGINING_OF_NEXT_LINE)
-
+		fmt.Printf("  %s%s", RGBColor(m.title, 42, 161, 179), cursor.BEGINING_OF_NEXT_LINE)
 	}
 
 	for i, title := range m.items {
+		arrow := RGBColor("○", 86, 84, 114)
+		color := 0
 		if i == m.activeIndex {
-			title += " <"
+			arrow = RGBColor("◉", 42, 161, 179)
+			color = 100
 		}
-		fmt.Printf("  %d) %s%v", i+1, title, cursor.BEGINING_OF_NEXT_LINE)
+		fmt.Printf("    %s %s%v", arrow, RGBColor(title, 122+color, 121+color, 133+color), cursor.BEGINING_OF_NEXT_LINE)
 	}
 }
 
-func (m *Menu) borderedRender() {
+func (m *menu) borderedRender() {
 	m.MoveCursorStart()
 	length := m.Length() + 1
 
@@ -106,10 +124,10 @@ func (m *Menu) borderedRender() {
 	}
 }
 
-func (m *Menu) drawBorder(content string, line int) {
+func (m *menu) drawBorder(content string, line int) {
 	switch {
 	case line == 0:
-		fmt.Printf("┌%s %s %s┐", strings.Repeat("─", 3), RGBColor(m.title, 42, 161, 179), strings.Repeat("─", m.tmRowLength-7-len(content)))
+		fmt.Printf("┌─ %s %s┐", RGBColor(m.title, 42, 161, 179), strings.Repeat("─", m.tmRowLength-5-utf8.RuneCountInString(content)))
 	case line == m.Length()+1:
 		fmt.Printf("└%s┘", strings.Repeat("─", m.tmRowLength-2))
 	default:
@@ -123,15 +141,15 @@ func (m *Menu) drawBorder(content string, line int) {
 			}
 		}
 
-		fmt.Printf("│ %s %s %s│", arrow, RGBColor(content, 122+color, 121+color, 133+color), strings.Repeat(" ", m.tmRowLength-len(content)-6))
+		fmt.Printf("│ %s %s %s│", arrow, RGBColor(content, 122+color, 121+color, 133+color), strings.Repeat(" ", m.tmRowLength-utf8.RuneCountInString(content)-6))
 	}
 }
 
-func (m *Menu) MoveCursorStart() {
+func (m *menu) MoveCursorStart() {
 	fmt.Printf("%v%v", fmt.Sprintf(cursor.UP, m.lineCount()), "\033[J")
 }
 
-func (m *Menu) DefineMenuOperation(keyPass string) {
+func (m *menu) DefineMenuOperation(keyPass string) {
 	switch keyPass {
 	case cursor.DOWN_ONE:
 		m.activeIndex = (m.activeIndex + 1) % m.Length()
@@ -142,8 +160,7 @@ func (m *Menu) DefineMenuOperation(keyPass string) {
 	}
 }
 
-func (m *Menu) DrawMenu() (*int, error) {
-	m.tmRowLength = 50
+func (m *menu) DrawMenu() (*int, error) {
 	err := SetRawMode()
 	if err != nil {
 		return nil, err
@@ -180,4 +197,22 @@ func (m *Menu) DrawMenu() (*int, error) {
 	}
 
 	return &m.activeIndex, nil
+}
+
+func (m *menu) terminalScreenSize() {
+	screen, err := screen.GetTerminalSize()
+	if err != nil || screen.Width > 66 {
+		m.tmRowLength = 66
+		return
+	}
+
+	m.tmRowLength = screen.Width
+}
+
+func (m *menu) responsiveText(text string) string {
+	if m.tmRowLength-10 < utf8.RuneCountInString(text) {
+		return text[:m.tmRowLength-9] + "\u2026"
+	}
+
+	return text
 }
