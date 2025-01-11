@@ -8,7 +8,9 @@ import (
 
 type Text struct {
 	color  color.Color
-	bColor color.Color
+	tRGB   color.RGB
+	bColor color.BColor
+	bRGB   color.RGB
 	bold   bool
 	uline  bool
 	italic bool
@@ -25,7 +27,7 @@ func (t *Text) Color(color color.Color) *Text {
 	return t
 }
 
-func (t *Text) BackgroudColor(color color.Color) *Text {
+func (t *Text) BackgroudColor(color color.BColor) *Text {
 	t.bColor = color
 
 	return t
@@ -51,6 +53,17 @@ func (t *Text) UnderLine() *Text {
 
 func (t *Text) GetStyledText() string {
 	return t.parseStyle()
+}
+
+func (t *Text) RGBColor(r, g, b int) *Text {
+	t.tRGB = color.RGB{R: r, G: g, B: b}
+
+	return t
+}
+func (t *Text) BackgroundRGBColor(r, g, b int) *Text {
+	t.bRGB = color.RGB{R: r, G: g, B: b}
+
+	return t
 }
 
 func (t *Text) Print() {
@@ -79,6 +92,12 @@ func (t *Text) parseStyle() string {
 		fallthrough
 	case t.bColor > 0:
 		text = fmt.Sprintf("\033[%dm%s", t.bColor, text)
+		fallthrough
+	case t.tRGB.R > 0 && t.tRGB.G > 0 && t.tRGB.B > 0:
+		text = fmt.Sprintf("\033[38;2;%d;%d;%dm%s", t.tRGB.R, t.tRGB.G, t.tRGB.B, text)
+		fallthrough
+	case t.bRGB.R > 0 && t.bRGB.G > 0 && t.bRGB.B > 0:
+		text = fmt.Sprintf("\033[48;2;%d;%d;%dm%s", t.bRGB.R, t.bRGB.G, t.bRGB.B, text)
 	}
 
 	text = fmt.Sprintf("%s\033[0m", text)

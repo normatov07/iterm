@@ -12,17 +12,24 @@ See for more infromation: https://pkg.go.dev/github.com/normatov07/iterm
   - Change text color
   - Set background colors
   - Apply text formatting (bold, italic, underline)
-  - Support for 8 standard terminal colors
-  - Custom color support
+  - Support for 8 standard and RGB colors
 
 - 📋 **Menu Management**
-  - Dynamic menu creation
+  - Dynamic and responsive menu creation
   - Easy menu item addition
+  - Single selection
+  - Multi selection
+  - Beauty bordered menu
 
 - 🖥️ **Change terminal mode**
   - Raw mode
   - Normal mode
+  - Disable output on terminal
+  - Restore default mode
 
+- **Helper terminal codes**
+  - ANSI escape sequences
+  - Box drawing codes
 
 ## Installation
 
@@ -38,41 +45,99 @@ go get github.com/normatov07/iterm
 easy and simple creating menu and get the index of the active item
 
 ```go
-menu := iterm.Menu{}
-menu.Add("Vue")
-menu.Add("React")
-menu.Add("JavaScript")
-menu.Add("TypeScript")
+import (
+    "fmt"
+    "github.com/normatov07/iterm"
+)
 
-// Draw the menu (implementation details may vary)
-index, err := menu.DrawMenu()
-if err != nil {
-   panic(err)
+func main() {
+    menu := iterm.NewMenu()
+    menu.SetTitle("Which framework do you like?")
+    menu.SetBorder()
+    menu.Add("Vue")
+    menu.Add("React")
+    menu.Add("Angular")
+    menu.Add("Svelte")
+
+    index, err := menu.DrawMenu()
+    if err != nil {
+        panic(err)
+    }
+    fmt.Println("Active item index:", index)
+    fmt.Println("Active item:", menu.GetActiveMenu())
 }
-fmt.Println("Active item index:", index)
-fmt.Println("Active item index:", menu.activeIndex)
 ```
 
-Text Styling
+### Creating a Multi-Select Menu
+
+You can also create a multi-select menu where users can select multiple items.
 
 ```go
-// Basic colored text
-iterm.NewText("Hello World").Color(color.RED).Println()
+import (
+    "fmt"
+    "github.com/normatov07/iterm"
+)
 
-// Advanced styling
-iterm.NewText("Styled Text")
-    .Color(color.GREEN)
-    .Bold(true)
-    .Italic(true)
-    .UnderLine(true)
-    .Println()
+func main() {
+    multiMenu := iterm.NewMultiMenu()
+    multiMenu.SetTitle("Select your favorite languages")
+    multiMenu.SetBorder()
+    multiMenu.Add("Go")
+    multiMenu.Add("Python")
+    multiMenu.Add("JavaScript")
+    multiMenu.Add("Rust")
+
+    _, err := multiMenu.DrawMenu()
+    if err != nil {
+        panic(err)
+    }
+    fmt.Println("Selected items:", multiMenu.GetActiveMenu())
+}
 ```
 
-Change terminal mode
+### Text Styling
+
+  We have lots of patters to give elegant seen to text on terminal
+
+```go
+import (
+    "github.com/normatov07/iterm"
+    "github.com/normatov07/iterm/color"
+)
+
+func main() {
+    // Basic colored text
+    iterm.NewText("Hello World").Color(color.RED).Println()
+
+    // Advanced styling
+    iterm.NewText("Styled Text").
+        Color(color.GREEN).
+        Bold().
+        Italic().
+        UnderLine().
+        Println()
+  
+  // RGB color
+    iterm.NewText("Hello World").RGBColor(42, 161, 179).BackgroundRGBColor(0, 0, 0).Println()
+
+}
+```
+### Ask Secure And Insecure Inputs
+You can ask for secure and insecure input (e.g: text, passwords) displaying or without displaying the input or patterned on the terminal.
+
+```go
+    password := iterm.AskSecurePatterned("Enter your password: ")
+    fmt.Println("\nPassword entered:", password)
+
+    age := iterm.Ask("How old are you?: ")
+    fmt.Println("Password entered:", age)
+```
+
+#### Change terminal mode
 
 ```go
 iterm.SetRawMode()
-iterm.RestoreTermMode()
+defer iterm.RestoreTermMode()
 ```
 
 ### License

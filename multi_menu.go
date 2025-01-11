@@ -11,78 +11,40 @@ import (
 	"github.com/normatov07/iterm/box"
 	"github.com/normatov07/iterm/cursor"
 	"github.com/normatov07/iterm/keypass"
-	"github.com/normatov07/iterm/screen"
 )
 
-type MenuData interface {
-	Add(title string)
-	Del(index int)
+type multiMenu struct {
+	menu
+	selected map[int]bool
 }
 
-type menu struct {
-	items       []string
-	border      bool
-	title       string
-	activeIndex int
-	tmRowLength int
-}
-
-func NewMenu() *menu {
-	menu := menu{}
+func NewMultiMenu() *multiMenu {
+	menu := multiMenu{
+		selected: make(map[int]bool),
+	}
 	menu.terminalScreenSize()
 
 	return &menu
 }
-
-func (m *menu) SetTitle(title string) {
-	m.title = m.responsiveText(title)
-}
-
-func (m *menu) SetBorder() {
-	m.border = true
-}
-
-func (m *menu) SetList(list []string) {
-	m.items = list
-}
-
-func (m *menu) Add(title string) {
-	m.items = append(m.items, m.responsiveText(title))
-}
-
-func (m *menu) Del(index int) {
-	m.items = append(m.items[:index], m.items[index:]...)
-}
-
-func (m *menu) Get(index int) string {
-	if index >= m.Length() {
-		panic("index out of range")
+func (m *multiMenu) GetActiveMenu() []string {
+	selected := make([]string, 0, len(m.selected))
+	for i := range m.selected {
+		selected = append(selected, m.items[i])
 	}
 
-	return m.items[index]
-}
-func (m *menu) GetActiveMenu() string {
-	return m.items[m.activeIndex]
+	return selected
 }
 
-func (m *menu) Length() int {
-	return len(m.items)
-}
-
-func (m *menu) lineCount() int {
-	line := m.Length()
-
-	if m.title != "" {
-		if m.border {
-			line += 1
-		}
-		line += 1
+func (m *multiMenu) GetActiveMenuIndex() []int {
+	selected := make([]int, 0, len(m.selected))
+	for i := range m.selected {
+		selected = append(selected, i)
 	}
 
-	return line
+	return selected
 }
 
-func (m *menu) Render() {
+func (m *multiMenu) Render() {
 	if m.border {
 		m.borderedRender()
 	} else {
@@ -90,7 +52,7 @@ func (m *menu) Render() {
 	}
 }
 
-func (m *menu) simpleRender() {
+func (m *multiMenu) simpleRender() {
 	m.MoveCursorStart()
 
 	if m.title != "" {
@@ -98,17 +60,24 @@ func (m *menu) simpleRender() {
 	}
 
 	for i, title := range m.items {
-		arrow := RGBColor("○", 86, 84, 114)
+		arrow := RGBColor(box.GEO_LARGE_INVERSE_CIRCLE, 86, 84, 114)
 		color := 0
+
+		if _, ok := m.selected[i]; ok {
+			arrow = RGBColor(box.GEO_LARGE_DIAMOND, 42, 161, 179)
+		}
+
 		if i == m.activeIndex {
-			arrow = RGBColor("◉", 42, 161, 179)
 			color = 100
 		}
+
 		fmt.Printf("    %s %s%v", arrow, RGBColor(title, 122+color, 121+color, 133+color), cursor.BEGINING_OF_NEXT_LINE)
 	}
+
+	fmt.Print(RGBColor("\nUse the space bar to select options.", 122, 121, 133), cursor.BEGINING_OF_NEXT_LINE)
 }
 
-func (m *menu) borderedRender() {
+func (m *multiMenu) borderedRender() {
 	m.MoveCursorStart()
 	length := m.Length() + 1
 
@@ -123,9 +92,11 @@ func (m *menu) borderedRender() {
 
 		fmt.Print(cursor.BEGINING_OF_NEXT_LINE)
 	}
+
+	fmt.Print(RGBColor("Use the space bar to select options.", 122, 121, 133), cursor.BEGINING_OF_NEXT_LINE)
 }
 
-func (m *menu) drawBorder(content string, line int) {
+func (m *multiMenu) drawBorder(content string, line int) {
 	switch {
 	case line == 0:
 		fmt.Printf("┌─ %s %s┐", RGBColor(m.title, 42, 161, 179), strings.Repeat(box.HORIZONTAL, m.tmRowLength-5-utf8.RuneCountInString(content)))
@@ -135,9 +106,13 @@ func (m *menu) drawBorder(content string, line int) {
 		arrow := ""
 		color := 0
 		if content != "" {
-			arrow = RGBColor("○", 86, 84, 114)
+			arrow = RGBColor(box.GEO_LARGE_INVERSE_CIRCLE, 86, 84, 114)
+
+			if _, ok := m.selected[line-1]; ok {
+				arrow = RGBColor(box.GEO_LARGE_DIAMOND, 42, 161, 179)
+			}
+
 			if line-1 == m.activeIndex {
-				arrow = RGBColor("◉", 42, 161, 179)
 				color = 100
 			}
 		}
@@ -146,11 +121,8 @@ func (m *menu) drawBorder(content string, line int) {
 	}
 }
 
-func (m *menu) MoveCursorStart() {
-	fmt.Printf("%v%v", fmt.Sprintf(cursor.UP, m.lineCount()), "\033[J")
-}
+func (m *multiMenu) DefineMenuOperation(keyPass string) {
 
-func (m *menu) DefineMenuOperation(keyPass string) {
 	switch keyPass {
 	case cursor.DOWN_ONE:
 		m.activeIndex = (m.activeIndex + 1) % m.Length()
@@ -161,11 +133,34 @@ func (m *menu) DefineMenuOperation(keyPass string) {
 	}
 }
 
-func (m *menu) CleanMenu() {
+func (m *multiMenu) selectOrDeselect() {
+	if _, ok := m.selected[m.activeIndex]; ok {
+		delete(m.selected, m.activeIndex)
+		return
+	}
+
+	m.selected[m.activeIndex] = true
+}
+
+func (m *multiMenu) lineCount() int {
+	line := m.Length() + 2
+
+	if m.title != "" {
+		line += 1
+	}
+
+	return line
+}
+
+func (m *multiMenu) CleanMenu() {
 	fmt.Printf("%v%v", fmt.Sprintf(cursor.UP, m.lineCount()+1), "\033[J")
 }
 
-func (m *menu) DrawMenu() (*int, error) {
+func (m *multiMenu) MoveCursorStart() {
+	fmt.Printf("%v%v", fmt.Sprintf(cursor.UP, m.lineCount()), "\033[J")
+}
+
+func (m *multiMenu) DrawMenu() (*int, error) {
 	err := SetRawMode()
 	if err != nil {
 		return nil, err
@@ -188,37 +183,26 @@ func (m *menu) DrawMenu() (*int, error) {
 		}
 
 		if len > 0 {
+
 			if buffer[0] == keypass.ENTER {
 				m.CleanMenu()
 				break
 			}
+
 			if buffer[0] == keypass.CTRLC || buffer[0] == keypass.CTRLX {
 				restoreAndExit(0)
 				break
 			}
 
+			if buffer[0] == keypass.PROBEL {
+				m.selectOrDeselect()
+				m.Render()
+				continue
+			}
+
 			m.DefineMenuOperation(string(buffer))
 		}
-
 	}
 
 	return &m.activeIndex, nil
-}
-
-func (m *menu) terminalScreenSize() {
-	screen, err := screen.GetTerminalSize()
-	if err != nil || screen.Width > 66 {
-		m.tmRowLength = 66
-		return
-	}
-
-	m.tmRowLength = screen.Width
-}
-
-func (m *menu) responsiveText(text string) string {
-	if m.tmRowLength-10 < utf8.RuneCountInString(text) {
-		return text[:m.tmRowLength-9] + "\u2026"
-	}
-
-	return text
 }
