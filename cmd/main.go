@@ -43,6 +43,7 @@ func main() {
 	menu1.Add("C#")
 	menu1.DrawMenu()
 
+	fmt.Println(iterm.RGBColor(42, 161, 179))
 	fmt.Println("\n You choosed: ", menu1.GetActiveMenu(), "\n")
 	// iterm.NewText("Hello World").Color(color.RED).Println()
 	// iterm.NewText("Salom Do'stlar").Color(color.RED).BackgroudColor(color.B_GREEN).Println()

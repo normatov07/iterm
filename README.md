@@ -120,6 +120,9 @@ func main() {
   // RGB color
     iterm.NewText("Hello World").RGBColor(42, 161, 179).BackgroundRGBColor(0, 0, 0).Println()
 
+    println(iterm.RGBColor("RGB colored text",42, 161, 179))
+	  println(iterm.BackgroundRGBColor("RGB back colored text",42, 161, 179))
+
 }
 ```
 ### Ask Secure And Insecure Inputs

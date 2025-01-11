@@ -112,3 +112,7 @@ func Colorful(text string, color color.Color) string {
 func RGBColor(text string, r, g, b int) string {
 	return fmt.Sprintf("\033[38;2;%d;%d;%dm%s\033[0m", r, g, b, text)
 }
+
+func BackgroundRGBColor(text string, r, g, b int) string {
+	return fmt.Sprintf("\033[48;2;%d;%d;%dm%s\033[0m", r, g, b, text)
+}
