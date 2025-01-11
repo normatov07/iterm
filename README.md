@@ -15,7 +15,8 @@ See for more infromation: https://pkg.go.dev/github.com/normatov07/iterm
   - Support for 8 standard and RGB colors
 
 - 📋 **Menu Management**
-  - Dynamic and responsive menu creation
+  - Dynamic 
+and responsive menu creation
   - Easy menu item addition
   - Single selection
   - Multi selection
@@ -27,7 +28,7 @@ See for more infromation: https://pkg.go.dev/github.com/normatov07/iterm
   - Disable output on terminal
   - Restore default mode
 
-- **Helper terminal codes**
+- 🧮 **Helper terminal codes**
   - ANSI escape sequences
   - Box drawing codes
 
