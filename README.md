@@ -8,12 +8,6 @@ See for more infromation: https://pkg.go.dev/github.com/normatov07/iterm
 
 ## Features
 
-- 🎨 **Text Styling**
-  - Change text color
-  - Set background colors
-  - Apply text formatting (bold, italic, underline)
-  - Support for 8 standard and RGB colors
-
 - 📋 **Menu Management**
   - Dynamic 
 and responsive menu creation
@@ -21,6 +15,12 @@ and responsive menu creation
   - Single selection
   - Multi selection
   - Beauty bordered menu
+  
+- 🎨 **Text Styling**
+  - Change text color
+  - Set background colors
+  - Apply text formatting (bold, italic, underline)
+  - Support for 8 standard and RGB colors
 
 - 🖥️ **Change terminal mode**
   - Raw mode
