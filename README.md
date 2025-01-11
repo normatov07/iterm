@@ -136,7 +136,9 @@ You can ask for secure and insecure input (e.g: text, passwords) displaying or w
     fmt.Println("Password entered:", age)
 ```
 
-#### Change terminal mode
+### Change terminal mode
+  
+  Change terminal mode.
 
 ```go
 iterm.SetRawMode()
