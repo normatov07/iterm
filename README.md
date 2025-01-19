@@ -131,10 +131,10 @@ You can ask for secure and insecure input (e.g: text, passwords) displaying or w
 
 ```go
     password := iterm.AskSecurePatterned("Enter your password: ")
-    fmt.Println("\nPassword entered:", password)
+    fmt.Println("\nPassword:", password)
 
     age := iterm.Ask("How old are you?: ")
-    fmt.Println("Password entered:", age)
+    fmt.Println("Age:", age)
 ```
 
 ### Change terminal mode
