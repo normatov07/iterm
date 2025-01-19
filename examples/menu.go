@@ -8,7 +8,7 @@ import (
 
 func main() {
 
-	pass := iterm.AskSecure("Password?: ")
+	pass := iterm.AskSecurePatterned("Password: ")
 	println("\npassword: ", pass)
 
 	menu := iterm.NewMultiMenu()
@@ -19,7 +19,7 @@ func main() {
 	menu.Add("Angular")
 	menu.Add("Svelte")
 	menu.DrawMenu()
-	fmt.Println("  You choosed: ", menu.GetActiveMenu())
+	fmt.Println("\n You choosed: ", menu.GetActiveMenu())
 
 	menu1 := iterm.NewMenu()
 	menu1.SetTitle("Which language do you like?")
@@ -33,4 +33,5 @@ func main() {
 	menu1.Add("C#")
 	menu1.DrawMenu()
 	fmt.Println("\n You choosed: ", menu1.GetActiveMenu())
+	println()
 }
